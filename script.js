@@ -14,13 +14,13 @@ AOS.init();
 
 
 const productSlider =
-document.getElementById("productSlider");
+  document.getElementById("productSlider");
 
 const nextBtn =
-document.getElementById("nextBtn");
+  document.getElementById("nextBtn");
 
 const prevBtn =
-document.getElementById("prevBtn");
+  document.getElementById("prevBtn");
 
 
 nextBtn.onclick = () => {
@@ -72,7 +72,7 @@ function validateEmail() {
 
     return false;
   }
-  window.location.href='404.html'
+  window.location.href = '404.html'
   message.innerHTML = "Subscribed successfully!";
   message.style.color = "lime";
 
@@ -91,50 +91,50 @@ function validateForm() {
   let formMessage = document.getElementById("formMessage");
 
   let emailPattern =
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if(name === ""){
+  if (name === "") {
 
     formMessage.innerHTML =
-    "Please enter your name";
+      "Please enter your name";
 
     formMessage.style.color = "red";
 
     return false;
   }
 
-  if(!emailPattern.test(email)){
+  if (!emailPattern.test(email)) {
 
     formMessage.innerHTML =
-    "Please enter a valid email address";
+      "Please enter a valid email address";
 
     formMessage.style.color = "red";
 
     return false;
   }
 
-  if(subject === ""){
+  if (subject === "") {
 
     formMessage.innerHTML =
-    "Please enter a subject";
+      "Please enter a subject";
 
     formMessage.style.color = "red";
 
     return false;
   }
 
-  if(message.length < 10){
+  if (message.length < 10) {
 
     formMessage.innerHTML =
-    "Message must contain at least 10 characters";
+      "Message must contain at least 10 characters";
 
     formMessage.style.color = "red";
 
     return false;
   }
-  window.location.href='404.html'
+  window.location.href = '404.html'
   formMessage.innerHTML =
-  "Message sent successfully!";
+    "Message sent successfully!";
 
   formMessage.style.color = "green";
 
