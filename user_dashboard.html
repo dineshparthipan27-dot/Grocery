@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stackly - My Account</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- INTERNAL CSS -->
+    <style>
+        :root {
+            /* COLOR THEME: Modern Indigo / Blue */
+            --primary-color: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-dark: #4338ca;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+
+            /* Status Colors */
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* ================= SIDEBAR & OVERLAY ================= */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-link i {
+            font-size: 18px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-bottom {
+            padding: 15px 0 25px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            color: var(--danger);
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger-light);
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 260px;
+            min-height: 100vh;
+            width: calc(100% - 260px);
+        }
+
+        .top-header {
+            background-color: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 998;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .greeting h1 {
+            font-size: 22px;
+            color: var(--text-dark);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: right;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 600;
+            display: block;
+        }
+
+        .user-avatar i {
+            font-size: 40px;
+            color: var(--primary-color);
+        }
+
+        /* ================= VIEWS (SPA Logic) ================= */
+        .view-section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.4s ease-in-out;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .scroll-anim {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-anim.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= SHARED COMPONENTS ================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-details h3 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .stat-details p {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .content-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            min-width: 500px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--bg-color);
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            white-space: nowrap;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.completed {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .status.pending {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .status.cancelled {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* Product/Wishlist Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .product-card i.fa-heart {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--danger);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .product-card h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .product-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .product-card .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Buttons */
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .cart-btn {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            width: 100%;
+            padding: 10px;
+        }
+
+        .cart-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .main-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            width: 100%;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Forms & Lists */
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .simple-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .simple-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .simple-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 15px;
+            border-left: 2px solid var(--primary-light);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid #fff;
+        }
+
+        .timeline-item h4 {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .timeline-item p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ================= MOBILE RESPONSIVE ================= */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .close-btn {
+                display: block;
+            }
+
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-header {
+                padding: 15px;
+            }
+
+            .view-section {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .greeting h1 {
+                font-size: 18px;
+            }
+
+            .stats-grid,
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card,
+            .content-box {
+                padding: 15px;
+                overflow-x: scroll;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR OVERLAY FOR MOBILE -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <h2><i class="fa-solid fa-leaf"></i> STACKLY</h2>
+                    <button class="close-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <ul class="sidebar-menu">
+                    <li><a class="menu-link active" data-target="dashboard-view"><i class="fa-solid fa-house"></i>
+                            Overview</a></li>
+                    <li><a class="menu-link" data-target="orders-view"><i class="fa-solid fa-box"></i> My Orders</a>
+                    </li>
+                    <li><a class="menu-link" data-target="wishlist-view"><i class="fa-solid fa-heart"></i> Wishlist</a>
+                    </li>
+                    <li><a class="menu-link" data-target="wallet-view"><i class="fa-solid fa-wallet"></i> My Wallet</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- LOGOUT BUTTON -->
+            <div class="sidebar-bottom">
+                <a href="#" class="menu-link logout-btn" id="logoutBtn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="openSidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="greeting">
+                        <h1 id="page-title">Overview <span class="welcome-name"></span></h1>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="user-role">Customer</span>
+                            <span class="user-email">nomail@user.com</span>
+                        </div>
+                        <div class="user-avatar">
+                            <i class="fa-solid fa-circle-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ================= 1. DASHBOARD OVERVIEW ================= -->
+            <div id="dashboard-view" class="view-section active">
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--primary-light); color: var(--primary-color);"><i
+                                class="fa-solid fa-box-open"></i></div>
+                        <div class="stat-details">
+                            <h3>2</h3>
+                            <p>Active Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);"><i
+                                class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div class="stat-details">
+                            <h3>₹4,500</h3>
+                            <p>Total Spent</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e8ff; color: #9333ea;"><i
+                                class="fa-solid fa-star"></i></div>
+                        <div class="stat-details">
+                            <h3>350</h3>
+                            <p>Reward Points</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Recent Purchase</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#ORD-4091</td>
+                                        <td>Today, 10:30 AM</td>
+                                        <td><span class="status pending">In Transit</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-3882</td>
+                                        <td>Oct 20, 2023</td>
+                                        <td><span class="status completed">Delivered</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Available Offers</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div><i class="fa-solid fa-tag" style="color: var(--warning);"></i> <strong>
+                                        SAVE20</strong></div>
+                                <span style="font-size: 13px; color: var(--text-muted);">20% off on Groceries</span>
+                            </li>
+                            <li>
+                                <div><i class="fa-solid fa-truck" style="color: var(--primary-color);"></i> <strong>
+                                        FREEDEL</strong></div>
+                                <span style="font-size: 13px; color: var(--text-muted);">Free Delivery over ₹500</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- Recommended Products -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">Recommended For You</h2>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <div style="font-size: 40px; color: var(--warning); margin-bottom: 10px;"><i
+                                    class="fa-solid fa-wheat-awn"></i></div>
+                            <h4>Aashirvaad Atta (5kg)</h4>
+                            <span class="price">₹240</span>
+                            <a href="404.html">
+                            <button class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button></a>
+                        </div>
+                        <div class="product-card">
+                            <div style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"><i
+                                    class="fa-solid fa-bottle-water"></i></div>
+                            <h4>Fortune Oil (1L)</h4>
+                            <span class="price">₹145</span>
+                            <a href="404.html">
+                            <button class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button></a>
+                        </div>
+                        <div class="product-card">
+                            <div style="font-size: 40px; color: #795548; margin-bottom: 10px;"><i
+                                    class="fa-solid fa-mug-hot"></i></div>
+                            <h4>Bru Coffee (100g)</h4>
+                            <span class="price">₹185</span>
+                            <a href="404.html">
+                            <button class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button></a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Account Alerts -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">Account Alerts</h2>
+                    <ul class="simple-list">
+                        <li>
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div
+                                    style="width:40px; height:40px; background:var(--primary-light); color:var(--primary-color); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                                    <i class="fa-solid fa-bell"></i></div>
+                                <div>
+                                    <h4 style="font-size:14px;">Your order #ORD-4091 is out for delivery!</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">2 hours ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div
+                                    style="width:40px; height:40px; background:var(--warning-light); color:var(--warning); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                                    <i class="fa-solid fa-star"></i></div>
+                                <div>
+                                    <h4 style="font-size:14px;">You earned 50 Reward Points on your last purchase.</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">Yesterday</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <!-- ================= 2. MY ORDERS VIEW ================= -->
+            <div id="orders-view" class="view-section">
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--success-light); color: var(--success);"><i
+                                class="fa-solid fa-check-double"></i></div>
+                        <div class="stat-details">
+                            <h3>12</h3>
+                            <p>Delivered</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);"><i
+                                class="fa-solid fa-truck-fast"></i></div>
+                        <div class="stat-details">
+                            <h3>1</h3>
+                            <p>In Transit</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--danger-light); color: var(--danger);"><i
+                                class="fa-solid fa-arrow-rotate-left"></i></div>
+                        <div class="stat-details">
+                            <h3>0</h3>
+                            <p>Returns</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Track Active Order (#ORD-4091)</h2>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <h4>Order Confirmed</h4>
+                                <p>Today, 10:30 AM</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h4>Packed & Ready</h4>
+                                <p>Today, 11:15 AM</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h4>Out for Delivery</h4>
+                                <p style="color: var(--primary-color); font-weight: 600;">Driver is nearby (ETA: 15
+                                    mins)</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Order History</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#ORD-3882</td>
+                                        <td>Oct 20</td>
+                                        <td>₹850</td>
+                                        <td><button onclick="window.location.href='404.html'" class="action-btn"
+                                                style="color:var(--primary-color);">Invoice</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-3750</td>
+                                        <td>Oct 12</td>
+                                        <td>₹1,240</td>
+                                        <td><button onclick="window.location.href='404.html'"class="action-btn"
+                                                style="color:var(--primary-color);">Invoice</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Buy Again</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;">Organic Honey (500g)</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">Purchased 2 weeks ago</p>
+                                </div>
+                                <button onclick="window.location.href='404.html'" class="action-btn cart-btn" style="width:auto;"><i
+                                        class="fa-solid fa-cart-plus"></i></button>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;">Basmati Rice (5kg)</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">Purchased 1 month ago</p>
+                                </div>
+                                <button onclick="window.location.href='404.html'" class="action-btn cart-btn" style="width:auto;"><i
+                                        class="fa-solid fa-cart-plus"></i></button>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Return & Refund Status</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;">#ORD-3601 (Damaged Item)</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">Refund initiated to original
+                                        payment method.</p>
+                                </div>
+                                <span class="status completed">Refunded</span>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;">#ORD-3610 (Wrong Item)</h4>
+                                    <p style="font-size:12px; color:var(--text-muted);">Pickup scheduled for tomorrow.
+                                    </p>
+                                </div>
+                                <span class="status pending">Processing</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ================= 3. WISHLIST VIEW ================= -->
+            <div id="wishlist-view" class="view-section">
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">My Saved Items</h2>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <i class="fa-solid fa-heart"></i>
+                            <div style="font-size: 40px; color: var(--warning); margin-bottom: 10px;"><i
+                                    class="fa-solid fa-wheat-awn"></i></div>
+                            <h4>Aashirvaad Atta (5kg)</h4>
+                            <p>Groceries</p>
+                            <span class="price">₹240</span>
+                            <button onclick="window.location.href='404.html'" class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add to
+                                Cart</button>
+                        </div>
+                        <div class="product-card">
+                            <i class="fa-solid fa-heart"></i>
+                            <div style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"><i
+                                    class="fa-solid fa-bottle-water"></i></div>
+                            <h4>Fortune Sunflower Oil (1L)</h4>
+                            <p>Cooking Essentials</p>
+                            <span class="price">₹145</span>
+                            <button onclick="window.location.href='404.html'" class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add to
+                                Cart</button>
+                        </div>
+                        <div class="product-card">
+                            <i class="fa-solid fa-heart"></i>
+                            <div style="font-size: 40px; color: #795548; margin-bottom: 10px;"><i
+                                    class="fa-solid fa-mug-hot"></i></div>
+                            <h4>Bru Instant Coffee (100g)</h4>
+                            <p>Beverages</p>
+                            <span class="price">₹185</span>
+                            <button onclick="window.location.href='404.html'" class="action-btn cart-btn"><i class="fa-solid fa-cart-plus"></i> Add to
+                                Cart</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Price Drop Alerts</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;"><i class="fa-solid fa-arrow-trend-down"
+                                            style="color:var(--success);"></i> Almonds (250g)</h4>
+                                </div>
+                                <div style="text-align:right;">
+                                    <span
+                                        style="color:var(--danger); text-decoration:line-through; font-size:12px;">₹350</span>
+                                    <strong style="color:var(--primary-color);">₹320</strong>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px;"><i class="fa-solid fa-arrow-trend-down"
+                                            style="color:var(--success);"></i> Maggi Noodles (Pack of 6)</h4>
+                                </div>
+                                <div style="text-align:right;">
+                                    <span
+                                        style="color:var(--danger); text-decoration:line-through; font-size:12px;">₹90</span>
+                                    <strong style="color:var(--primary-color);">₹75</strong>
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Out of Stock Saved Items</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div>
+                                    <h4 style="font-size:14px; color:var(--text-muted);">Tata Tea Premium (500g)</h4>
+                                    <p style="font-size:12px; color:var(--danger);">Currently unavailable</p>
+                                </div>
+                                <button class="action-btn"
+                                    style="background:var(--border-color); color:var(--text-muted); cursor:not-allowed;">Notify
+                                    Me</button>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ================= 4. MY WALLET VIEW ================= -->
+            <div id="wallet-view" class="view-section">
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--primary-light); color: var(--primary-color);"><i
+                                class="fa-solid fa-wallet"></i></div>
+                        <div class="stat-details">
+                            <h3>₹1,250.00</h3>
+                            <p>Stackly Wallet Balance</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);"><i
+                                class="fa-solid fa-coins"></i></div>
+                        <div class="stat-details">
+                            <h3>850</h3>
+                            <p>Super Coins</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Quick Top-Up</h2>
+                        <form>
+                            <div class="input-group">
+                                <label>Enter Amount (₹)</label>
+                                <input type="number" placeholder="e.g. 500" required>
+                            </div>
+                            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                                <button onclick="window.location.href='404.html'" type="button" class="action-btn"
+                                    style="background:var(--primary-light); color:var(--primary-dark);">+ ₹500</button>
+                                <button onclick="window.location.href='404.html'" type="button" class="action-btn"
+                                    style="background:var(--primary-light); color:var(--primary-dark);">+ ₹1000</button>
+                                <button onclick="window.location.href='404.html'" type="button" class="action-btn"
+                                    style="background:var(--primary-light); color:var(--primary-dark);">+ ₹2000</button>
+                            </div>
+                            <button onclick="window.location.href='404.html'" type="submit" class="main-btn"><i class="fa-solid fa-plus"></i> Add Money to
+                                Wallet</button>
+                        </form>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Saved Payment Methods</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div style="display:flex; align-items:center; gap:15px;">
+                                    <i class="fa-brands fa-cc-visa" style="font-size:24px; color:#1434CB;"></i>
+                                    <div>
+                                        <h4 style="font-size:14px;">HDFC Bank Credit Card</h4>
+                                        <p style="font-size:12px; color:var(--text-muted);">**** **** **** 4567</p>
+                                    </div>
+                                </div>
+                                <a href="404.html">
+                                <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;"></i></a>
+                            </li>
+                            <li>
+                                <div style="display:flex; align-items:center; gap:15px;">
+                                    <i class="fa-solid fa-building-columns"
+                                        style="font-size:20px; color:var(--primary-color);"></i>
+                                    <div>
+                                        <h4 style="font-size:14px;">Google Pay UPI</h4>
+                                        <p style="font-size:12px; color:var(--text-muted);">username@okicici</p>
+                                    </div>
+                                </div>
+                                <a href="404.html">
+                                <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;"></i></a>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <div class="two-col-grid">
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Transaction History</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Oct 20</td>
+                                        <td>Order #ORD-3882 Refund</td>
+                                        <td style="color: var(--success); font-weight: 600;">+ ₹120</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Oct 15</td>
+                                        <td>Wallet Top-up via UPI</td>
+                                        <td style="color: var(--success); font-weight: 600;">+ ₹500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Oct 12</td>
+                                        <td>Used in Order #ORD-3750</td>
+                                        <td style="color: var(--danger); font-weight: 600;">- ₹300</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">My Coupons</h2>
+                        <ul style="list-style: none; margin-top:10px;">
+                            <li
+                                style="padding: 15px; border: 1px dashed var(--primary-color); border-radius: 8px; margin-bottom: 15px; background: var(--primary-light);">
+                                <div style="display: flex; justify-content: space-between; align-items:center;">
+                                    <h4 style="color: var(--primary-dark); font-size: 16px;">FESTIVAL50</h4>
+                                    <button onclick="window.location.href='404.html'" class="action-btn"
+                                        style="background: var(--primary-color); color: #fff;">Copy</button>
+                                </div>
+                                <p style="font-size: 13px; margin-top: 5px; color: var(--text-dark);">Flat ₹50 off on
+                                    orders above ₹1000.</p>
+                            </li>
+                            <li
+                                style="padding: 15px; border: 1px dashed var(--warning); border-radius: 8px; background: var(--warning-light);">
+                                <div style="display: flex; justify-content: space-between; align-items:center;">
+                                    <h4 style="color: #b45309; font-size: 16px;">NEWUSER20</h4>
+                                    <button onclick="window.location.href='404.html'" class="action-btn"
+                                        style="background: var(--warning); color: #fff;">Copy</button>
+                                </div>
+                                <p style="font-size: 13px; margin-top: 5px; color: var(--text-dark);">20% Cashback to
+                                    Wallet. Max ₹200.</p>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- INTERNAL JS -->
+    <script>
+        // Fetch User Email from LocalStorage
+        const emailValue = localStorage.getItem("UserMail");
+        const email = emailValue || "nomail@user.com";
+        const extractedName = email.split("@")[0];
+        const formattedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
+
+        // Update HTML elements dynamically
+        const emailEls = document.querySelectorAll(".user-email");
+        emailEls.forEach(el => el.textContent = email);
+
+        const welcomeEl = document.querySelector(".welcome-name");
+        if (welcomeEl && extractedName !== "nomail") {
+            welcomeEl.textContent = `| Hi, ${formattedName} 👋`;
+        }
+
+        // 1. Sidebar Toggle for Mobile
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const openSidebarBtn = document.getElementById('openSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        openSidebarBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // 2. SPA Navigation Logic
+        const menuLinks = document.querySelectorAll('.sidebar-menu .menu-link');
+        const views = document.querySelectorAll('.view-section');
+        const pageTitle = document.getElementById('page-title');
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                menuLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                views.forEach(v => v.classList.remove('active'));
+
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+
+                // Update Title
+                let titleText = this.innerText.trim();
+                let welcomeText = extractedName !== "nomail" ? `<span class="welcome-name">| Hi, ${formattedName} 👋</span>` : "";
+                pageTitle.innerHTML = `${titleText} ${welcomeText}`;
+
+                if (window.innerWidth <= 992) {
+                    closeSidebar();
+                }
+
+                triggerAnimations();
+            });
+        });
+
+        // 3. Logout Button Action (Redirects to index.html and clears storage)
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem("UserMail");
+            window.location.href = "login.html";
+        });
+
+        // 4. Scrolling Animation Logic
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        function triggerAnimations() {
+            const animElements = document.querySelectorAll('.scroll-anim');
+            animElements.forEach(el => {
+                el.classList.remove('show');
+                observer.observe(el);
+            });
+        }
+
+        // Initialize animations on load
+        triggerAnimations();
+    </script>
+</body>
+
+</html>

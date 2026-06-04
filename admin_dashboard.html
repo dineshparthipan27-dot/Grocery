@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stackly Admin Dashboard</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- INTERNAL CSS -->
+    <style>
+        :root {
+            --primary-color: #4caf50;
+            --primary-light: #e8f5e9;
+            --primary-dark: #388e3c;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* ================= SIDEBAR & OVERLAY ================= */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-link i {
+            font-size: 18px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-bottom {
+            padding: 15px 0 25px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            color: #ef4444;
+        }
+
+        .logout-btn:hover {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 260px;
+            min-height: 100vh;
+            width: calc(100% - 260px);
+        }
+
+        .top-header {
+            background-color: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 998;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .greeting h1 {
+            font-size: 22px;
+            color: var(--text-dark);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: right;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 600;
+            display: block;
+        }
+
+        .user-avatar i {
+            font-size: 40px;
+            color: var(--primary-color);
+        }
+
+        /* ================= VIEWS (SPA Logic) ================= */
+        .view-section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.4s ease-in-out;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .scroll-anim {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-anim.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= SHARED COMPONENTS ================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-details h3 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .stat-details p {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .content-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* Two Column Grid for new sections */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            min-width: 500px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--bg-color);
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            white-space: nowrap;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status.pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .status.cancelled {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .status.alert {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        /* Dashboard Specific */
+        .dashboard-bottom {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        /* Product Grid Specific */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-card i.fa-box {
+            font-size: 50px;
+            color: #cddc39;
+            margin-bottom: 15px;
+        }
+
+        .product-card h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .product-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .product-card .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Buttons */
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .edit-btn {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .delete-btn {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .main-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .main-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Forms & Lists */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .simple-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .simple-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .simple-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Timeline (Order Mgmt) */
+        .timeline {
+            margin-top: 15px;
+            border-left: 2px solid var(--primary-light);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid #fff;
+        }
+
+        .timeline-item h4 {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .timeline-item p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* User Grid Specific */
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .user-card i.fa-circle-user {
+            font-size: 45px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .user-info-card h4 {
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .user-info-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+
+        /* ================= MOBILE RESPONSIVE ================= */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .close-btn {
+                display: block;
+            }
+
+            .dashboard-bottom,
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-header {
+                padding: 15px;
+            }
+
+            .view-section {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .greeting h1 {
+                font-size: 18px;
+            }
+
+            .stats-grid,
+            .product-grid,
+            .user-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .content-box {
+                padding: 15px;
+                overflow-x: scroll;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR OVERLAY FOR MOBILE -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <h2><i class="fa-solid fa-leaf"></i> STACKLY</h2>
+                    <button class="close-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <ul class="sidebar-menu">
+                    <li><a class="menu-link active" data-target="dashboard-view"><i class="fa-solid fa-gauge"></i>
+                            Dashboard</a></li>
+                    <li><a class="menu-link" data-target="product-view"><i class="fa-solid fa-box-open"></i> Product
+                            Mgmt</a></li>
+                    <li><a class="menu-link" data-target="order-view"><i class="fa-solid fa-cart-shopping"></i> Order
+                            Mgmt</a></li>
+                    <li><a class="menu-link" data-target="user-view"><i class="fa-solid fa-users"></i> User Mgmt</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- LOGOUT BUTTON -->
+            <div class="sidebar-bottom">
+                <a href="#" class="menu-link logout-btn" id="logoutBtn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="openSidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="greeting">
+                        <h1 id="page-title">Dashboard Overview <span class="welcome-name"></span></h1>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="user-role">Admin</span>
+                            <span class="user-email">dinesh@gmail.com</span>
+                        </div>
+                        <div class="user-avatar">
+                            <i class="fa-solid fa-circle-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ================= 1. DASHBOARD VIEW ================= -->
+            <div id="dashboard-view" class="view-section active">
+                <!-- Stats -->
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;"><i
+                                class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div class="stat-details">
+                            <h3>₹45,230</h3>
+                            <p>Today's Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fff3e0; color: #ff9800;"><i
+                                class="fa-solid fa-truck-fast"></i></div>
+                        <div class="stat-details">
+                            <h3>124</h3>
+                            <p>Orders Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e3f2fd; color: #2196f3;"><i
+                                class="fa-solid fa-users"></i></div>
+                        <div class="stat-details">
+                            <h3>89</h3>
+                            <p>Active Customers</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chart Section -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">Revenue Analytics</h2>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Bottom Grid -->
+                <section class="dashboard-bottom scroll-anim">
+                    <div class="content-box">
+                        <h2 class="section-title">Recent Orders</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#ORD-001</td>
+                                        <td>Rajesh Kumar</td>
+                                        <td><span class="status completed">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-002</td>
+                                        <td>Priya M</td>
+                                        <td><span class="status pending">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#ORD-003</td>
+                                        <td>Arun Vignesh</td>
+                                        <td><span class="status completed">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="content-box">
+                        <h2 class="section-title">Top Products</h2>
+                        <ul class="simple-list">
+                            <li><span>Aashirvaad Atta</span><strong>₹240</strong></li>
+                            <li><span>Tata Salt</span><strong>₹25</strong></li>
+                            <li><span>Fortune Oil</span><strong>₹145</strong></li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= 2. PRODUCT MGMT VIEW ================= -->
+            <div id="product-view" class="view-section">
+
+                <!-- Product Stats -->
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;"><i
+                                class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="stat-details">
+                            <h3>1,245</h3>
+                            <p>Total Products</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #ffebee; color: #f44336;"><i
+                                class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-details">
+                            <h3>12</h3>
+                            <p>Out of Stock</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e5f5; color: #9c27b0;"><i
+                                class="fa-solid fa-tags"></i></div>
+                        <div class="stat-details">
+                            <h3>24</h3>
+                            <p>Categories</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: 2-Column Extra Sections (Product) -->
+                <div class="two-col-grid">
+                    <!-- 1. Add Product Form -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Quick Add Product</h2>
+                        <form>
+                            <div class="input-group">
+                                <input type="text" placeholder="Product Name" required>
+                            </div>
+                            <div class="input-group">
+                                <select required>
+                                    <option value="" disabled selected>Select Category</option>
+                                    <option>Groceries</option>
+                                    <option>Beverages</option>
+                                    <option>Snacks</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="display: flex; gap: 10px;">
+                                <input type="number" placeholder="Price (₹)" required>
+                                <input type="number" placeholder="Stock Qty" required>
+                            </div>
+                            
+                            <button onclick="window.location.href='404.html'" type="submit" class="action-btn main-btn"><i class="fa-solid fa-plus"></i> Add
+                               
+        
+                        </form>
+                    </section>
+
+                    <!-- 2. Low Stock Alerts -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Low Stock Alerts</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div><i class="fa-solid fa-circle-exclamation" style="color: #f44336;"></i> Almonds
+                                    (250g)</div>
+                                <span class="status alert">2 Left</span>
+                            </li>
+                            <li>
+                                <div><i class="fa-solid fa-circle-exclamation" style="color: #ff9800;"></i> Sunflower
+                                    Oil (1L)</div>
+                                <span class="status pending">10 Left</span>
+                            </li>
+                            <li>
+                                <div><i class="fa-solid fa-circle-exclamation" style="color: #ff9800;"></i> Maggi
+                                    Noodles</div>
+                                <span class="status pending">15 Left</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- Existing Inventory Grid -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">Product Inventory</h2>
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <i class="fa-solid fa-box"></i>
+                            <h4>Organic Honey (500g)</h4>
+                            <p>Stock: 45 units</p>
+                            <span class="price">₹180</span>
+                            <div style="display:flex; gap:10px; justify-content:center;">
+                                <a href="404.html"><button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
+                               <a href="404.html"> <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+                            </div>
+                        </div>
+                        <div class="product-card">
+                            <i class="fa-solid fa-box"></i>
+                            <h4>Premium Rice (5kg)</h4>
+                            <p>Stock: 120 units</p>
+                            <span class="price">₹650</span>
+                            <div style="display:flex; gap:10px; justify-content:center;">
+                               <a href="404.html"> <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
+                               <a href="404.html"><button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+                            </div>
+                        </div>
+                        <div class="product-card">
+                            <i class="fa-solid fa-box"></i>
+                            <h4>Almonds (250g)</h4>
+                            <p style="color:#f44336; font-weight: 600;">Stock: 2 units (Low)</p>
+                            <span class="price">₹320</span>
+                            <div style="display:flex; gap:10px; justify-content:center;">
+                                <a href="404.html">                               
+                                <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
+                                 <a href="404.html">
+                                <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= 3. ORDER MGMT VIEW ================= -->
+            <div id="order-view" class="view-section">
+                <!-- Order Stats -->
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fff3e0; color: #ff9800;"><i
+                                class="fa-solid fa-clock"></i></div>
+                        <div class="stat-details">
+                            <h3>45</h3>
+                            <p>Pending Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;"><i
+                                class="fa-solid fa-check-double"></i></div>
+                        <div class="stat-details">
+                            <h3>320</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #ffebee; color: #f44336;"><i
+                                class="fa-solid fa-ban"></i></div>
+                        <div class="stat-details">
+                            <h3>8</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: 2-Column Extra Sections (Order) -->
+                <div class="two-col-grid">
+                    <!-- 1. Live Tracking Timeline -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Live Tracking (#ORD-1092)</h2>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <h4>Order Placed</h4>
+                                <p>Oct 24, 10:30 AM</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h4>Processing</h4>
+                                <p>Oct 24, 11:15 AM</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h4>Out for Delivery</h4>
+                                <p style="color: var(--primary-color); font-weight: 600;">Arriving Today at 4 PM</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 2. Recent Returns -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Recent Returns</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div>
+                                    <strong>#ORD-1085</strong> <br> <span
+                                        style="font-size:12px; color:var(--text-muted);">Damaged Item</span>
+                                </div>
+                                <span class="status cancelled">Refunded</span>
+                            </li>
+                            <li>
+                                <div>
+                                    <strong>#ORD-1077</strong> <br> <span
+                                        style="font-size:12px; color:var(--text-muted);">Wrong Product</span>
+                                </div>
+                                <span class="status pending">Processing</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- Existing Order Table -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">All Orders List</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer Name</th>
+                                    <th>Date & Time</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#ORD-1092</td>
+                                    <td>Suresh Kumar</td>
+                                    <td>Oct 24, 10:30 AM</td>
+                                    <td>₹1,240</td>
+                                    <td><span class="status pending">Pending</span></td>
+                                    <td><button class="action-btn edit-btn">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-1091</td>
+                                    <td>Kavitha Reddy</td>
+                                    <td>Oct 24, 09:15 AM</td>
+                                    <td>₹450</td>
+                                    <td><span class="status completed">Completed</span></td>
+                                    <td><button class="action-btn edit-btn">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-1090</td>
+                                    <td>Mohammed Ali</td>
+                                    <td>Oct 23, 08:45 PM</td>
+                                    <td>₹2,890</td>
+                                    <td><span class="status cancelled">Cancelled</span></td>
+                                    <td><button class="action-btn edit-btn">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= 4. USER MGMT VIEW ================= -->
+            <div id="user-view" class="view-section">
+                <!-- User Stats -->
+                <section class="stats-grid scroll-anim">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e3f2fd; color: #2196f3;"><i
+                                class="fa-solid fa-users"></i></div>
+                        <div class="stat-details">
+                            <h3>8,459</h3>
+                            <p>Total Registered</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;"><i
+                                class="fa-solid fa-user-check"></i></div>
+                        <div class="stat-details">
+                            <h3>1,200</h3>
+                            <p>Active This Month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e5f5; color: #9c27b0;"><i
+                                class="fa-solid fa-user-shield"></i></div>
+                        <div class="stat-details">
+                            <h3>15</h3>
+                            <p>Staff Members</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: 2-Column Extra Sections (User) -->
+                <div class="two-col-grid">
+                    <!-- 1. Activity Logs -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Recent Activity Logs</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Anjali Sharma</td>
+                                        <td>Updated Product #02</td>
+                                        <td>10 mins ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rahul Dravid</td>
+                                        <td>Placed Order #ORD-1093</td>
+                                        <td>1 hr ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dinesh (Admin)</td>
+                                        <td>Changed Staff Permissions</td>
+                                        <td>3 hrs ago</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 2. Role Permissions -->
+                    <section class="content-box scroll-anim">
+                        <h2 class="section-title">Role Overview</h2>
+                        <ul class="simple-list">
+                            <li>
+                                <div><i class="fa-solid fa-user-tie" style="color: var(--primary-color);"></i>
+                                    <strong>Admin</strong></div>
+                                <span style="font-size:12px; color:var(--text-muted);">Full Access</span>
+                            </li>
+                            <li>
+                                <div><i class="fa-solid fa-user-pen" style="color: #2196f3;"></i> <strong>Editor /
+                                        Staff</strong></div>
+                                <span style="font-size:12px; color:var(--text-muted);">Product & Orders Only</span>
+                            </li>
+                            <li>
+                                <div><i class="fa-solid fa-user" style="color: #9c27b0;"></i> <strong>Customer</strong>
+                                </div>
+                                <span style="font-size:12px; color:var(--text-muted);">Purchasing Access</span>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- Existing User Grid -->
+                <section class="content-box scroll-anim">
+                    <h2 class="section-title">Staff & Customer Profiles</h2>
+                    <div class="user-grid">
+                        <div class="user-card">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <div class="user-info-card">
+                                <h4>Rahul Dravid</h4>
+                                <p>rahul@example.com</p>
+                                <span class="status completed"
+                                    style="margin-top:5px; display:inline-block;">Customer</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <i class="fa-solid fa-circle-user" style="color: #4caf50;"></i>
+                            <div class="user-info-card">
+                                <h4>Anjali Sharma</h4>
+                                <p>anjali@stackly.com</p>
+                                <span class="status pending" style="margin-top:5px; display:inline-block;">Staff /
+                                    Editor</span>
+                            </div>
+                        </div>
+                        <div class="user-card">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <div class="user-info-card">
+                                <h4>Vikram Singh</h4>
+                                <p>vikram@example.com</p>
+                                <span class="status completed"
+                                    style="margin-top:5px; display:inline-block;">Customer</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- INTERNAL JS -->
+    <script>
+        const emailValue = localStorage.getItem("UserMail");
+
+        // Set a default email if nothing is in localStorage
+        const email = emailValue || "nomail@user.com";
+
+        // 1. Extract the name by splitting at '@' and taking the first part [0]
+        const extractedName = email.split("@")[0];
+
+        // 2. Capitalize the first letter for a better look
+        const formattedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
+
+        // 3. Update HTML elements
+        document.querySelector(".user-email").textContent = email;
+
+        // Show Welcome name if element exists
+        const welcomeEl = document.querySelector(".welcome-name");
+        if (welcomeEl) {
+            welcomeEl.textContent = `| Hi, ${formattedName} 👋`;
+        }
+
+        // 1. Sidebar Toggle for Mobile with Overlay
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const openSidebarBtn = document.getElementById('openSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        openSidebarBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // 2. SPA Navigation Logic (Switching Views)
+        const menuLinks = document.querySelectorAll('.sidebar-menu .menu-link');
+        const views = document.querySelectorAll('.view-section');
+        const pageTitle = document.getElementById('page-title');
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                menuLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                views.forEach(v => v.classList.remove('active'));
+
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+
+                pageTitle.innerHTML = `${this.innerText} <span class="welcome-name">| Hi, ${formattedName} 👋</span>`;
+
+                if (window.innerWidth <= 992) {
+                    closeSidebar();
+                }
+
+                triggerAnimations();
+            });
+        });
+
+        // Logout Button action
+document.getElementById('logoutBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Clear user data on logout (Good practice)
+    localStorage.removeItem("UserMail");
+    
+    // Redirect to login page (Unnoda login page name 'index.html' illana 'login.html' nu mathiko)
+    window.location.href = "login.html"; 
+});
+
+        // 3. Chart.js Initialization
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Revenue (₹)',
+                    data: [12000, 19000, 15000, 25000, 22000, 30000],
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 4. Scrolling Animation Logic
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        function triggerAnimations() {
+            const animElements = document.querySelectorAll('.scroll-anim');
+            animElements.forEach(el => {
+                el.classList.remove('show');
+                observer.observe(el);
+            });
+        }
+
+        // Initialize animations on load
+        triggerAnimations();
+    </script>
+</body>
+
+</html>
