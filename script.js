@@ -138,5 +138,5 @@ function validateForm() {
 
   formMessage.style.color = "green";
 
-  return false; /* remove this if connected to backend */
+  return false; 
 }

@@ -1,4 +1,4 @@
-// Tab Switching Elements
+
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
 const loginForm = document.getElementById("loginForm");
@@ -25,7 +25,6 @@ signupBtn.addEventListener("click", showSignupForm);
 showSignup.addEventListener("click", showSignupForm);
 showLogin.addEventListener("click", showLoginForm);
 
-// Password Visibility Toggle
 document.querySelectorAll(".toggle-password").forEach(icon => {
     icon.addEventListener("click", () => {
         const input = icon.previousElementSibling;
@@ -39,7 +38,7 @@ document.querySelectorAll(".toggle-password").forEach(icon => {
     });
 });
 
-// Email Validation Regex
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Utility function to show/hide errors
@@ -54,7 +53,6 @@ function clearError(elementId) {
     errorElement.innerText = "";
     errorElement.classList.remove("show");
 }
- // ================= LOGIN VALIDATION =================
 loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     let isValid = true;
@@ -63,7 +61,7 @@ loginForm.addEventListener("submit", (e) => {
     const password = document.getElementById("loginPassword").value.trim();
     const role = document.getElementById("loginRole").value;
 
-    // Email Check
+    
     if (!emailPattern.test(email)) {
         showError("loginEmailError", "Please enter a valid email address.");
         isValid = false;
@@ -71,7 +69,7 @@ loginForm.addEventListener("submit", (e) => {
         clearError("loginEmailError");
     }
 
-    // Password Check
+    
     if (password.length < 6) {
         showError("loginPasswordError", "Password must be at least 6 characters.");
         isValid = false;
@@ -79,7 +77,6 @@ loginForm.addEventListener("submit", (e) => {
         clearError("loginPasswordError");
     }
 
-    // If valid, redirect based on role
     if (isValid) {
         localStorage.setItem("UserMail",email);
         if (role === "admin") {
@@ -90,7 +87,6 @@ loginForm.addEventListener("submit", (e) => {
     }
 });
 
-// ================= SIGNUP VALIDATION =================
 signupForm.addEventListener("submit", (e) => {
     e.preventDefault();
     let isValid = true;
@@ -101,7 +97,7 @@ signupForm.addEventListener("submit", (e) => {
     const confirmPassword = document.getElementById("signupConfirmPassword").value.trim();
     const role = document.getElementById("signupRole").value;
 
-    // Name Check
+    
     if (name === "") {
         showError("signupNameError", "Full name is required.");
         isValid = false;
@@ -109,7 +105,7 @@ signupForm.addEventListener("submit", (e) => {
         clearError("signupNameError");
     }
 
-    // Email Check
+
     if (!emailPattern.test(email)) {
         showError("signupEmailError", "Please enter a valid email address.");
         isValid = false;
@@ -117,7 +113,6 @@ signupForm.addEventListener("submit", (e) => {
         clearError("signupEmailError");
     }
 
-    // Password Check
     if (password.length < 6) {
         showError("signupPasswordError", "Password must be at least 6 characters.");
         isValid = false;
@@ -125,7 +120,6 @@ signupForm.addEventListener("submit", (e) => {
         clearError("signupPasswordError");
     }
 
-    // Confirm Password Check
     if (password !== confirmPassword || confirmPassword === "") {
         showError("signupConfirmError", "Passwords do not match.");
         isValid = false;
@@ -133,7 +127,7 @@ signupForm.addEventListener("submit", (e) => {
         clearError("signupConfirmError");
     }
 
-    // If valid, perform signup action (like redirect or API call)
+    
     if (isValid) {
         // alert(`Account created successfully as ${role}!`);
         showLoginForm(); // Redirect back to login after signup

@@ -82,7 +82,7 @@ form {
     gap: 15px;
 }
 
-/* Input Fields */
+
 input, select {
     width: 100%;
     padding: 14px;
@@ -111,7 +111,7 @@ input:focus, select:focus {
     color: #94a3b8;
 }
 
-/* Error Messages Styling */
+
 .error-msg {
     color: #ef4444;
     font-size: 12px;
@@ -124,7 +124,6 @@ input:focus, select:focus {
     display: block;
 }
 
-/* Remember Me Alignment Fix */
 .options {
     display: flex;
     justify-content: space-between;

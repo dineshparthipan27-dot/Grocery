@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stackly Admin Dashboard</title>
-    <!-- Font Awesome for Icons -->
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Chart.js for Charts -->
+  
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- INTERNAL CSS -->
+   
     <style>
         :root {
             --primary-color: #4caf50;
@@ -43,7 +43,6 @@
             width: 100%;
         }
 
-        /* ================= SIDEBAR & OVERLAY ================= */
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
@@ -144,7 +143,7 @@
             border-left: 4px solid #dc2626;
         }
 
-        /* ================= MAIN CONTENT ================= */
+       
         .main-content {
             flex: 1;
             display: flex;
@@ -220,7 +219,7 @@
             color: var(--primary-color);
         }
 
-        /* ================= VIEWS (SPA Logic) ================= */
+       
         .view-section {
             display: none;
             padding: 30px;
@@ -264,7 +263,7 @@
             transform: translateY(0);
         }
 
-        /* ================= SHARED COMPONENTS ================= */
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -313,7 +312,7 @@
             width: 100%;
         }
 
-        /* Two Column Grid for new sections */
+       
         .two-col-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -380,7 +379,7 @@
             color: #f44336;
         }
 
-        /* Dashboard Specific */
+       
         .dashboard-bottom {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -393,7 +392,6 @@
             width: 100%;
         }
 
-        /* Product Grid Specific */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -433,7 +431,7 @@
             display: block;
         }
 
-        /* Buttons */
+       
         .action-btn {
             padding: 8px 15px;
             border: none;
@@ -466,7 +464,7 @@
             background: var(--primary-dark);
         }
 
-        /* Forms & Lists */
+      
         .input-group {
             margin-bottom: 15px;
         }
@@ -503,7 +501,7 @@
             border-bottom: none;
         }
 
-        /* Timeline (Order Mgmt) */
+       
         .timeline {
             margin-top: 15px;
             border-left: 2px solid var(--primary-light);
@@ -539,7 +537,7 @@
             color: var(--text-muted);
         }
 
-        /* User Grid Specific */
+       
         .user-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -573,7 +571,7 @@
             word-break: break-all;
         }
 
-        /* ================= MOBILE RESPONSIVE ================= */
+       
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -658,10 +656,10 @@
 
     <div class="dashboard-container">
 
-        <!-- SIDEBAR OVERLAY FOR MOBILE -->
+       
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- SIDEBAR -->
+      
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-top">
 
@@ -687,7 +685,6 @@
                 </ul>
             </div>
 
-            <!-- LOGOUT BUTTON -->
             <div class="sidebar-bottom">
                 <a href="#" class="menu-link logout-btn" id="logoutBtn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
@@ -695,10 +692,10 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
+        
         <main class="main-content">
 
-            <!-- TOP HEADER -->
+           
             <header class="top-header">
                 <div class="header-left">
                     <button class="menu-toggle" id="openSidebar">
@@ -721,7 +718,7 @@
                 </div>
             </header>
 
-            <!-- ================= 1. DASHBOARD VIEW ================= -->
+            
             <div id="dashboard-view" class="view-section active">
                 <!-- Stats -->
                 <section class="stats-grid scroll-anim">
@@ -751,7 +748,7 @@
                     </div>
                 </section>
 
-                <!-- Chart Section -->
+                
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Revenue Analytics</h2>
                     <div class="chart-container">
@@ -759,7 +756,7 @@
                     </div>
                 </section>
 
-                <!-- Bottom Grid -->
+               
                 <section class="dashboard-bottom scroll-anim">
                     <div class="content-box">
                         <h2 class="section-title">Recent Orders</h2>
@@ -803,7 +800,7 @@
                 </section>
             </div>
 
-            <!-- ================= 2. PRODUCT MGMT VIEW ================= -->
+          
             <div id="product-view" class="view-section">
 
                 <!-- Product Stats -->
@@ -834,9 +831,9 @@
                     </div>
                 </section>
 
-                <!-- NEW: 2-Column Extra Sections (Product) -->
+                
                 <div class="two-col-grid">
-                    <!-- 1. Add Product Form -->
+                   
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Quick Add Product</h2>
                         <form>
@@ -862,7 +859,7 @@
                         </form>
                     </section>
 
-                    <!-- 2. Low Stock Alerts -->
+                   
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Low Stock Alerts</h2>
                         <ul class="simple-list">
@@ -885,7 +882,7 @@
                     </section>
                 </div>
 
-                <!-- Existing Inventory Grid -->
+                
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Product Inventory</h2>
                     <div class="product-grid">
@@ -926,7 +923,7 @@
                 </section>
             </div>
 
-            <!-- ================= 3. ORDER MGMT VIEW ================= -->
+           
             <div id="order-view" class="view-section">
                 <!-- Order Stats -->
                 <section class="stats-grid scroll-anim">
@@ -956,7 +953,7 @@
                     </div>
                 </section>
 
-                <!-- NEW: 2-Column Extra Sections (Order) -->
+            
                 <div class="two-col-grid">
                     <!-- 1. Live Tracking Timeline -->
                     <section class="content-box scroll-anim">
@@ -977,7 +974,7 @@
                         </div>
                     </section>
 
-                    <!-- 2. Recent Returns -->
+                
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Recent Returns</h2>
                         <ul class="simple-list">
@@ -999,7 +996,7 @@
                     </section>
                 </div>
 
-                <!-- Existing Order Table -->
+               
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">All Orders List</h2>
                     <div class="table-container">
@@ -1045,7 +1042,7 @@
                 </section>
             </div>
 
-            <!-- ================= 4. USER MGMT VIEW ================= -->
+            
             <div id="user-view" class="view-section">
                 <!-- User Stats -->
                 <section class="stats-grid scroll-anim">
@@ -1075,9 +1072,9 @@
                     </div>
                 </section>
 
-                <!-- NEW: 2-Column Extra Sections (User) -->
+              
                 <div class="two-col-grid">
-                    <!-- 1. Activity Logs -->
+                   
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Recent Activity Logs</h2>
                         <div class="table-container">
@@ -1110,7 +1107,7 @@
                         </div>
                     </section>
 
-                    <!-- 2. Role Permissions -->
+                    
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Role Overview</h2>
                         <ul class="simple-list">
@@ -1133,7 +1130,7 @@
                     </section>
                 </div>
 
-                <!-- Existing User Grid -->
+                
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Staff & Customer Profiles</h2>
                     <div class="user-grid">
@@ -1171,29 +1168,20 @@
         </main>
     </div>
 
-    <!-- INTERNAL JS -->
+   
     <script>
         const emailValue = localStorage.getItem("UserMail");
 
-        // Set a default email if nothing is in localStorage
+       
         const email = emailValue || "nomail@user.com";
 
-        // 1. Extract the name by splitting at '@' and taking the first part [0]
         const extractedName = email.split("@")[0];
-
-        // 2. Capitalize the first letter for a better look
         const formattedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
-
-        // 3. Update HTML elements
         document.querySelector(".user-email").textContent = email;
-
-        // Show Welcome name if element exists
         const welcomeEl = document.querySelector(".welcome-name");
         if (welcomeEl) {
             welcomeEl.textContent = `| Hi, ${formattedName} 👋`;
         }
-
-        // 1. Sidebar Toggle for Mobile with Overlay
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const openSidebarBtn = document.getElementById('openSidebar');
@@ -1215,7 +1203,7 @@
         closeSidebarBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        // 2. SPA Navigation Logic (Switching Views)
+       
         const menuLinks = document.querySelectorAll('.sidebar-menu .menu-link');
         const views = document.querySelectorAll('.view-section');
         const pageTitle = document.getElementById('page-title');
@@ -1240,18 +1228,18 @@
             });
         });
 
-        // Logout Button action
+        
 document.getElementById('logoutBtn').addEventListener('click', (e) => {
     e.preventDefault();
     
-    // Clear user data on logout (Good practice)
+
     localStorage.removeItem("UserMail");
     
-    // Redirect to login page (Unnoda login page name 'index.html' illana 'login.html' nu mathiko)
+    
     window.location.href = "login.html"; 
 });
 
-        // 3. Chart.js Initialization
+      
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctx, {
             type: 'line',
@@ -1278,7 +1266,7 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
             }
         });
 
-        // 4. Scrolling Animation Logic
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1294,8 +1282,6 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
                 observer.observe(el);
             });
         }
-
-        // Initialize animations on load
         triggerAnimations();
     </script>
 </body>

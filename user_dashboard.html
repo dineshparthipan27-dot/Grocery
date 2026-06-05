@@ -10,10 +10,9 @@
     <!-- Chart.js for Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- INTERNAL CSS -->
     <style>
         :root {
-            /* COLOR THEME: Modern Indigo / Blue */
+         
             --primary-color: #4f46e5;
             --primary-light: #e0e7ff;
             --primary-dark: #4338ca;
@@ -24,7 +23,7 @@
             --border-color: #e2e8f0;
             --card-bg: #ffffff;
 
-            /* Status Colors */
+           
             --success: #10b981;
             --success-light: #d1fae5;
             --warning: #f59e0b;
@@ -52,7 +51,7 @@
             width: 100%;
         }
 
-        /* ================= SIDEBAR & OVERLAY ================= */
+        
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
@@ -153,7 +152,6 @@
             border-left: 4px solid #dc2626;
         }
 
-        /* ================= MAIN CONTENT ================= */
         .main-content {
             flex: 1;
             display: flex;
@@ -229,7 +227,6 @@
             color: var(--primary-color);
         }
 
-        /* ================= VIEWS (SPA Logic) ================= */
         .view-section {
             display: none;
             padding: 30px;
@@ -273,7 +270,6 @@
             transform: translateY(0);
         }
 
-        /* ================= SHARED COMPONENTS ================= */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -328,7 +324,7 @@
             gap: 20px;
         }
 
-        /* Tables */
+      
         .table-container {
             width: 100%;
             overflow-x: auto;
@@ -383,7 +379,7 @@
             color: var(--danger);
         }
 
-        /* Product/Wishlist Grid */
+    
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -427,7 +423,6 @@
             display: block;
         }
 
-        /* Buttons */
         .action-btn {
             padding: 8px 15px;
             border: none;
@@ -466,7 +461,7 @@
             background: var(--primary-dark);
         }
 
-        /* Forms & Lists */
+      
         .input-group {
             margin-bottom: 15px;
             text-align: left;
@@ -514,7 +509,6 @@
             border-bottom: none;
         }
 
-        /* Timeline */
         .timeline {
             margin-top: 15px;
             border-left: 2px solid var(--primary-light);
@@ -550,7 +544,6 @@
             color: var(--text-muted);
         }
 
-        /* ================= MOBILE RESPONSIVE ================= */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -624,7 +617,6 @@
 
     <div class="dashboard-container">
 
-        <!-- SIDEBAR OVERLAY FOR MOBILE -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- SIDEBAR -->
@@ -652,7 +644,7 @@
                 </ul>
             </div>
 
-            <!-- LOGOUT BUTTON -->
+           
             <div class="sidebar-bottom">
                 <a href="#" class="menu-link logout-btn" id="logoutBtn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
@@ -660,10 +652,9 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
+       
         <main class="main-content">
 
-            <!-- TOP HEADER -->
             <header class="top-header">
                 <div class="header-left">
                     <button class="menu-toggle" id="openSidebar">
@@ -686,7 +677,7 @@
                 </div>
             </header>
 
-            <!-- ================= 1. DASHBOARD OVERVIEW ================= -->
+           
             <div id="dashboard-view" class="view-section active">
                 <section class="stats-grid scroll-anim">
                     <div class="stat-card">
@@ -760,7 +751,6 @@
                     </section>
                 </div>
 
-                <!-- Recommended Products -->
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Recommended For You</h2>
                     <div class="product-grid">
@@ -791,7 +781,7 @@
                     </div>
                 </section>
 
-                <!-- Account Alerts -->
+              
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Account Alerts</h2>
                     <ul class="simple-list">
@@ -821,7 +811,7 @@
                 </section>
             </div>
 
-            <!-- ================= 2. MY ORDERS VIEW ================= -->
+          
             <div id="orders-view" class="view-section">
                 <section class="stats-grid scroll-anim">
                     <div class="stat-card">
@@ -950,7 +940,7 @@
                 </div>
             </div>
 
-            <!-- ================= 3. WISHLIST VIEW ================= -->
+           
             <div id="wishlist-view" class="view-section">
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">My Saved Items</h2>
@@ -1034,7 +1024,7 @@
                 </div>
             </div>
 
-            <!-- ================= 4. MY WALLET VIEW ================= -->
+          
             <div id="wallet-view" class="view-section">
                 <section class="stats-grid scroll-anim">
                     <div class="stat-card">
@@ -1170,15 +1160,15 @@
         </main>
     </div>
 
-    <!-- INTERNAL JS -->
+  
     <script>
-        // Fetch User Email from LocalStorage
+        
         const emailValue = localStorage.getItem("UserMail");
         const email = emailValue || "nomail@user.com";
         const extractedName = email.split("@")[0];
         const formattedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
 
-        // Update HTML elements dynamically
+       
         const emailEls = document.querySelectorAll(".user-email");
         emailEls.forEach(el => el.textContent = email);
 
@@ -1187,7 +1177,7 @@
             welcomeEl.textContent = `| Hi, ${formattedName} 👋`;
         }
 
-        // 1. Sidebar Toggle for Mobile
+    
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const openSidebarBtn = document.getElementById('openSidebar');
@@ -1209,7 +1199,7 @@
         closeSidebarBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        // 2. SPA Navigation Logic
+        
         const menuLinks = document.querySelectorAll('.sidebar-menu .menu-link');
         const views = document.querySelectorAll('.view-section');
         const pageTitle = document.getElementById('page-title');
@@ -1224,7 +1214,7 @@
                 const targetId = this.getAttribute('data-target');
                 document.getElementById(targetId).classList.add('active');
 
-                // Update Title
+              
                 let titleText = this.innerText.trim();
                 let welcomeText = extractedName !== "nomail" ? `<span class="welcome-name">| Hi, ${formattedName} 👋</span>` : "";
                 pageTitle.innerHTML = `${titleText} ${welcomeText}`;
@@ -1237,14 +1227,14 @@
             });
         });
 
-        // 3. Logout Button Action (Redirects to index.html and clears storage)
+       
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem("UserMail");
             window.location.href = "login.html";
         });
 
-        // 4. Scrolling Animation Logic
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1261,7 +1251,7 @@
             });
         }
 
-        // Initialize animations on load
+      
         triggerAnimations();
     </script>
 </body>
