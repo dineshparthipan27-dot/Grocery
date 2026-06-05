@@ -836,27 +836,29 @@
                    
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Quick Add Product</h2>
-                        <form>
-                            <div class="input-group">
-                                <input type="text" placeholder="Product Name" required>
-                            </div>
-                            <div class="input-group">
-                                <select required>
-                                    <option value="" disabled selected>Select Category</option>
-                                    <option>Groceries</option>
-                                    <option>Beverages</option>
-                                    <option>Snacks</option>
-                                </select>
-                            </div>
-                            <div class="input-group" style="display: flex; gap: 10px;">
-                                <input type="number" placeholder="Price (₹)" required>
-                                <input type="number" placeholder="Stock Qty" required>
-                            </div>
-                            
-                            <button onclick="window.location.href='404.html'" type="submit" class="action-btn main-btn"><i class="fa-solid fa-plus"></i> Add
-                               
-        
-                        </form>
+                  <form id="productForm">
+    <div class="input-group">
+        <input type="text" id="productName" placeholder="Product Name">
+    </div>
+
+    <div class="input-group">
+        <select id="category">
+            <option value="" selected>Select Category</option>
+            <option>Groceries</option>
+            <option>Beverages</option>
+            <option>Snacks</option>
+        </select>
+    </div>
+
+    <div class="input-group" style="display: flex; gap: 10px;">
+        <input type="number" id="price" placeholder="Price (₹)">
+        <input type="number" id="stock" placeholder="Stock Qty">
+    </div>
+
+    <button type="submit" class="action-btn main-btn">
+        <i class="fa-solid fa-plus"></i> Add
+    </button>
+</form>
                     </section>
 
                    
@@ -1283,6 +1285,38 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
             });
         }
         triggerAnimations();
+
+   const productForm = document.getElementById("productForm");
+
+productForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const productName = document.getElementById("productName").value.trim();
+    const category = document.getElementById("category").value;
+    const price = document.getElementById("price").value;
+    const stock = document.getElementById("stock").value;
+
+    if (productName === "") {
+        return;
+    }
+
+    if (category === "") {
+        return;
+    }
+
+    if (price === "" || price <= 0) {
+        return;
+    }
+
+    if (stock === "" || stock < 0) {
+        return;
+    }
+
+    // Redirect after successful validation
+    window.location.href = "404.html";
+});
+
+   
     </script>
 </body>
 
