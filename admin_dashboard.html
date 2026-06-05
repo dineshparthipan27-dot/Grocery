@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stackly Admin Dashboard</title>
-   
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-   
+
     <style>
         :root {
             --primary-color: #4caf50;
@@ -143,7 +143,7 @@
             border-left: 4px solid #dc2626;
         }
 
-       
+
         .main-content {
             flex: 1;
             display: flex;
@@ -219,7 +219,7 @@
             color: var(--primary-color);
         }
 
-       
+
         .view-section {
             display: none;
             padding: 30px;
@@ -263,7 +263,7 @@
             transform: translateY(0);
         }
 
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -312,7 +312,7 @@
             width: 100%;
         }
 
-       
+
         .two-col-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -379,7 +379,7 @@
             color: #f44336;
         }
 
-       
+
         .dashboard-bottom {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -431,7 +431,7 @@
             display: block;
         }
 
-       
+
         .action-btn {
             padding: 8px 15px;
             border: none;
@@ -464,7 +464,7 @@
             background: var(--primary-dark);
         }
 
-      
+
         .input-group {
             margin-bottom: 15px;
         }
@@ -501,7 +501,7 @@
             border-bottom: none;
         }
 
-       
+
         .timeline {
             margin-top: 15px;
             border-left: 2px solid var(--primary-light);
@@ -537,7 +537,7 @@
             color: var(--text-muted);
         }
 
-       
+
         .user-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -571,7 +571,7 @@
             word-break: break-all;
         }
 
-       
+
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -639,16 +639,34 @@
             }
         }
 
-             .logo-da{
-    display: flex;
-    align-items: left;
-    justify-content: left;
-    margin-bottom: 10px;
-    margin-top:10px ;
-}
-.logo-da img{
-    width: 180px;}
+        .logo-da {
+            display: flex;
+            align-items: left;
+            justify-content: left;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
 
+        .logo-da img {
+            width: 180px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -656,20 +674,20 @@
 
     <div class="dashboard-container">
 
-       
+
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-      
+
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-top">
 
-                  
+
 
                 <div class="sidebar-header">
-                       <div class="logo-da">
-                    <img src="./asset/green_logo.webp" alt="logo">
+                    <div class="logo-da">
+                        <img src="./asset/green_logo.webp" alt="logo">
 
-                 </div>
+                    </div>
                     <button class="close-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
@@ -692,10 +710,10 @@
             </div>
         </aside>
 
-        
+
         <main class="main-content">
 
-           
+
             <header class="top-header">
                 <div class="header-left">
                     <button class="menu-toggle" id="openSidebar">
@@ -718,7 +736,7 @@
                 </div>
             </header>
 
-            
+
             <div id="dashboard-view" class="view-section active">
                 <!-- Stats -->
                 <section class="stats-grid scroll-anim">
@@ -748,7 +766,7 @@
                     </div>
                 </section>
 
-                
+
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Revenue Analytics</h2>
                     <div class="chart-container">
@@ -756,7 +774,7 @@
                     </div>
                 </section>
 
-               
+
                 <section class="dashboard-bottom scroll-anim">
                     <div class="content-box">
                         <h2 class="section-title">Recent Orders</h2>
@@ -800,7 +818,7 @@
                 </section>
             </div>
 
-          
+
             <div id="product-view" class="view-section">
 
                 <!-- Product Stats -->
@@ -831,37 +849,48 @@
                     </div>
                 </section>
 
-                
+
                 <div class="two-col-grid">
-                   
+
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Quick Add Product</h2>
-                  <form id="productForm">
-    <div class="input-group">
-        <input type="text" id="productName" placeholder="Product Name">
-    </div>
+                        <form id="productForm">
 
-    <div class="input-group">
-        <select id="category">
-            <option value="" selected>Select Category</option>
-            <option>Groceries</option>
-            <option>Beverages</option>
-            <option>Snacks</option>
-        </select>
-    </div>
+                            <div class="input-group">
+                                <input type="text" id="productName" placeholder="Product Name">
+                                <span class="error" id="productNameError"></span>
+                            </div>
 
-    <div class="input-group" style="display: flex; gap: 10px;">
-        <input type="number" id="price" placeholder="Price (₹)">
-        <input type="number" id="stock" placeholder="Stock Qty">
-    </div>
+                            <div class="input-group">
+                                <select id="category">
+                                    <option value="" selected>Select Category</option>
+                                    <option>Groceries</option>
+                                    <option>Beverages</option>
+                                    <option>Snacks</option>
+                                </select>
+                                <span class="error" id="categoryError"></span>
+                            </div>
 
-    <button type="submit" class="action-btn main-btn">
-        <i class="fa-solid fa-plus"></i> Add
-    </button>
-</form>
+                            <div class="input-group" style="display:flex; gap:10px;">
+                                <div>
+                                    <input type="number" id="price" placeholder="Price (₹)">
+                                    <span class="error" id="priceError"></span>
+                                </div>
+
+                                <div>
+                                    <input type="number" id="stock" placeholder="Stock Qty">
+                                    <span class="error" id="stockError"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="action-btn main-btn">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+
+                        </form>
                     </section>
 
-                   
+
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Low Stock Alerts</h2>
                         <ul class="simple-list">
@@ -884,7 +913,7 @@
                     </section>
                 </div>
 
-                
+
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Product Inventory</h2>
                     <div class="product-grid">
@@ -894,8 +923,10 @@
                             <p>Stock: 45 units</p>
                             <span class="price">₹180</span>
                             <div style="display:flex; gap:10px; justify-content:center;">
-                                <a href="404.html"><button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
-                               <a href="404.html"> <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+                                <a href="404.html"><button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>
+                                        Edit</button></a>
+                                <a href="404.html"> <button class="action-btn delete-btn"><i
+                                            class="fa-solid fa-trash"></i></button></a>
                             </div>
                         </div>
                         <div class="product-card">
@@ -904,8 +935,10 @@
                             <p>Stock: 120 units</p>
                             <span class="price">₹650</span>
                             <div style="display:flex; gap:10px; justify-content:center;">
-                               <a href="404.html"> <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
-                               <a href="404.html"><button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+                                <a href="404.html"> <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>
+                                        Edit</button></a>
+                                <a href="404.html"><button class="action-btn delete-btn"><i
+                                            class="fa-solid fa-trash"></i></button></a>
                             </div>
                         </div>
                         <div class="product-card">
@@ -914,18 +947,19 @@
                             <p style="color:#f44336; font-weight: 600;">Stock: 2 units (Low)</p>
                             <span class="price">₹320</span>
                             <div style="display:flex; gap:10px; justify-content:center;">
-                                <a href="404.html">                               
-                                <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button></a>
-                                 <a href="404.html">
-                                <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
-                                
+                                <a href="404.html">
+                                    <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>
+                                        Edit</button></a>
+                                <a href="404.html">
+                                    <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i></button></a>
+
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
 
-           
+
             <div id="order-view" class="view-section">
                 <!-- Order Stats -->
                 <section class="stats-grid scroll-anim">
@@ -955,7 +989,7 @@
                     </div>
                 </section>
 
-            
+
                 <div class="two-col-grid">
                     <!-- 1. Live Tracking Timeline -->
                     <section class="content-box scroll-anim">
@@ -976,7 +1010,7 @@
                         </div>
                     </section>
 
-                
+
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Recent Returns</h2>
                         <ul class="simple-list">
@@ -998,7 +1032,7 @@
                     </section>
                 </div>
 
-               
+
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">All Orders List</h2>
                     <div class="table-container">
@@ -1044,7 +1078,7 @@
                 </section>
             </div>
 
-            
+
             <div id="user-view" class="view-section">
                 <!-- User Stats -->
                 <section class="stats-grid scroll-anim">
@@ -1074,9 +1108,9 @@
                     </div>
                 </section>
 
-              
+
                 <div class="two-col-grid">
-                   
+
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Recent Activity Logs</h2>
                         <div class="table-container">
@@ -1109,13 +1143,14 @@
                         </div>
                     </section>
 
-                    
+
                     <section class="content-box scroll-anim">
                         <h2 class="section-title">Role Overview</h2>
                         <ul class="simple-list">
                             <li>
                                 <div><i class="fa-solid fa-user-tie" style="color: var(--primary-color);"></i>
-                                    <strong>Admin</strong></div>
+                                    <strong>Admin</strong>
+                                </div>
                                 <span style="font-size:12px; color:var(--text-muted);">Full Access</span>
                             </li>
                             <li>
@@ -1132,7 +1167,7 @@
                     </section>
                 </div>
 
-                
+
                 <section class="content-box scroll-anim">
                     <h2 class="section-title">Staff & Customer Profiles</h2>
                     <div class="user-grid">
@@ -1170,11 +1205,11 @@
         </main>
     </div>
 
-   
+
     <script>
         const emailValue = localStorage.getItem("UserMail");
 
-       
+
         const email = emailValue || "nomail@user.com";
 
         const extractedName = email.split("@")[0];
@@ -1205,7 +1240,7 @@
         closeSidebarBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-       
+
         const menuLinks = document.querySelectorAll('.sidebar-menu .menu-link');
         const views = document.querySelectorAll('.view-section');
         const pageTitle = document.getElementById('page-title');
@@ -1230,18 +1265,18 @@
             });
         });
 
-        
-document.getElementById('logoutBtn').addEventListener('click', (e) => {
-    e.preventDefault();
-    
 
-    localStorage.removeItem("UserMail");
-    
-    
-    window.location.href = "login.html"; 
-});
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
 
-      
+
+            localStorage.removeItem("UserMail");
+
+
+            window.location.href = "login.html";
+        });
+
+
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueChart = new Chart(ctx, {
             type: 'line',
@@ -1268,7 +1303,7 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
             }
         });
 
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1286,37 +1321,53 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
         }
         triggerAnimations();
 
-   const productForm = document.getElementById("productForm");
+        const productForm = document.getElementById("productForm");
 
-productForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+        productForm.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-    const productName = document.getElementById("productName").value.trim();
-    const category = document.getElementById("category").value;
-    const price = document.getElementById("price").value;
-    const stock = document.getElementById("stock").value;
+            document.getElementById("productNameError").textContent = "";
+            document.getElementById("categoryError").textContent = "";
+            document.getElementById("priceError").textContent = "";
+            document.getElementById("stockError").textContent = "";
 
-    if (productName === "") {
-        return;
-    }
+            const productName = document.getElementById("productName").value.trim();
+            const category = document.getElementById("category").value;
+            const price = document.getElementById("price").value;
+            const stock = document.getElementById("stock").value;
 
-    if (category === "") {
-        return;
-    }
+            let isValid = true;
 
-    if (price === "" || price <= 0) {
-        return;
-    }
+            if (productName === "") {
+                document.getElementById("productNameError").textContent =
+                    "Product name is required";
+                isValid = false;
+            }
 
-    if (stock === "" || stock < 0) {
-        return;
-    }
+            if (category === "") {
+                document.getElementById("categoryError").textContent =
+                    "Please select a category";
+                isValid = false;
+            }
 
-    // Redirect after successful validation
-    window.location.href = "404.html";
-});
+            if (price === "" || price <= 0) {
+                document.getElementById("priceError").textContent =
+                    "Enter a valid price";
+                isValid = false;
+            }
 
-   
+            if (stock === "" || stock < 0) {
+                document.getElementById("stockError").textContent =
+                    "Enter a valid stock quantity";
+                isValid = false;
+            }
+
+            if (isValid) {
+                window.location.href = "404.html";
+            }
+        });
+
+
     </script>
 </body>
 
